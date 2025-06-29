@@ -14,7 +14,8 @@ import {
   IconButton,
   Chip,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Button
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import EmailIcon from '@mui/icons-material/Email';
@@ -24,9 +25,10 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState(0);
 
-  const handleTabChange = (event, newValue) => setActiveTab(newValue);
-
-  const userInfo = {
+  // --- Tab 1: Personal Details States ---
+  // Assuming initial values might come from a fetched user profile or existing constants
+  // For now, using values from userInfo and aboutInfo for consistency with display parts
+  const initialUserInfo = { // Encapsulating for clarity, though parts are used elsewhere directly
     name: 'JWT User',
     job: 'UI/UX Designer',
     email: 'demo@sample.com',
@@ -39,13 +41,70 @@ const ProfilePage = () => {
     following: 300,
   };
 
-  const aboutInfo = {
+  const initialAboutInfo = { // Encapsulating for clarity
     about: 'I am a passionate UI/UX designer who loves to create beautiful and user-friendly interfaces.',
     fullName: 'JWT User',
     dob: '1990-01-01',
     gender: 'Male',
     language: 'English',
     nationality: 'UAE',
+  };
+
+  // Original constants for display purposes (Tab 0)
+  const userInfo = { ...initialUserInfo };
+  const aboutInfo = { ...initialAboutInfo };
+
+
+  const [phoneNumber, setPhoneNumber] = useState(initialUserInfo.phone);
+  const [dateOfBirth, setDateOfBirth] = useState(initialAboutInfo.dob);
+
+  // --- Tab 2: My Account States ---
+  const [username, setUsername] = useState(initialUserInfo.name?.toLowerCase().replace(' ', '_') || 'jwt_user'); // Example default
+
+  const handleTabChange = (event, newValue) => setActiveTab(newValue);
+
+  const handleSavePersonalDetails = () => {
+    console.log('Saving Personal Details:', { phoneNumber, dateOfBirth });
+    alert('Personal details saved (check console)!');
+  };
+
+  const handleSaveAccountDetails = () => {
+    console.log('Saving Account Details:', { username });
+    alert('Account details saved (check console)!');
+  };
+
+  // --- Tab 3: Change Password States ---
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const handleChangePassword = () => {
+    if (newPassword !== confirmPassword) {
+      alert('New password and confirm password do not match!');
+      return;
+    }
+    if (!currentPassword || !newPassword) {
+      alert('Please fill in all password fields.');
+      return;
+    }
+    console.log('Changing Password:', {
+      currentPassword: '***', // Don't log actual passwords
+      newPassword: '***',
+    });
+    alert('Password change request processed (check console)!');
+    // Clear fields after submission for security/UX
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  };
+
+  // --- Tab 4: Settings States ---
+  const [language, setLanguage] = useState('English'); // Default from current UI
+  const [timezone, setTimezone] = useState('GMT');     // Default from current UI
+
+  const handleSaveSettings = () => {
+    console.log('Saving Settings:', { language, timezone });
+    alert('Settings saved (check console)!');
   };
 
   const educationInfo = [
@@ -215,11 +274,16 @@ const ProfilePage = () => {
         {/* Personal Details Tab */}
         {activeTab === 1 && (
           <Box sx={{ mt: 4 }}> {/* Consistent top margin */}
-            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2.5 }}>Personal Details</Typography> {/* Styled title */}
-            {/* <Divider sx={{ my: 2 }} /> Removed divider, spacing should be enough */}
-            <Grid container spacing={2.5}> {/* Consistent spacing */}
+            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2.5 }}>Personal Details</Typography>
+            <Grid container spacing={2.5}>
               <Grid item xs={12} md={6}>
-                <TextField fullWidth label="Phone Number" variant="outlined" defaultValue="+1234567890" />
+                <TextField
+                  fullWidth
+                  label="Phone Number"
+                  variant="outlined"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                />
               </Grid>
               <Grid item xs={12} md={6}>
                 <TextField
@@ -227,9 +291,15 @@ const ProfilePage = () => {
                   label="Date of Birth"
                   variant="outlined"
                   type="date"
-                  defaultValue="1990-01-01"
+                  value={dateOfBirth}
+                  onChange={(e) => setDateOfBirth(e.target.value)}
                   InputLabelProps={{ shrink: true }}
                 />
+              </Grid>
+              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Button variant="contained" color="primary" onClick={handleSavePersonalDetails}>
+                  Save Details
+                </Button>
               </Grid>
             </Grid>
           </Box>
@@ -238,14 +308,30 @@ const ProfilePage = () => {
         {/* My Account Tab */}
         {activeTab === 2 && (
           <Box sx={{ mt: 4 }}> {/* Consistent top margin */}
-            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2.5 }}>My Account</Typography> {/* Styled title */}
-            {/* <Divider sx={{ my: 2 }} /> */}
-            <Grid container spacing={2.5}> {/* Consistent spacing */}
+            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2.5 }}>My Account</Typography>
+            <Grid container spacing={2.5}>
               <Grid item xs={12} md={6}>
-                <TextField fullWidth label="Username" variant="outlined" defaultValue="john_doe" />
+                <TextField
+                  fullWidth
+                  label="Username"
+                  variant="outlined"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField fullWidth label="Email" variant="outlined" defaultValue="john.doe@example.com" disabled /> {/* Assuming email might be non-editable */}
+                <TextField
+                  fullWidth
+                  label="Email"
+                  variant="outlined"
+                  value={initialUserInfo.email} // Display original email
+                  disabled // Keep it disabled
+                />
+              </Grid>
+              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Button variant="contained" color="primary" onClick={handleSaveAccountDetails}>
+                  Save Account Details
+                </Button>
               </Grid>
             </Grid>
           </Box>
@@ -254,17 +340,42 @@ const ProfilePage = () => {
         {/* Change Password Tab */}
         {activeTab === 3 && (
           <Box sx={{ mt: 4 }}> {/* Consistent top margin */}
-            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2.5 }}>Change Password</Typography> {/* Styled title */}
-            {/* <Divider sx={{ my: 2 }} /> */}
-            <Grid container spacing={2.5}> {/* Consistent spacing */}
+            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2.5 }}>Change Password</Typography>
+            <Grid container spacing={2.5}>
               <Grid item xs={12} md={6}>
-                <TextField fullWidth label="Current Password" variant="outlined" type="password" />
+                <TextField
+                  fullWidth
+                  label="Current Password"
+                  variant="outlined"
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                />
               </Grid>
-              <Grid item xs={12} md={6}> {/* This will be on the same line for md up */}
-                <TextField fullWidth label="New Password" variant="outlined" type="password" />
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label="New Password"
+                  variant="outlined"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
               </Grid>
-              <Grid item xs={12}> {/* This will take full width, effectively moving to the next line */}
-                <TextField fullWidth label="Confirm New Password" variant="outlined" type="password" />
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Confirm New Password"
+                  variant="outlined"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Button variant="contained" color="primary" onClick={handleChangePassword}>
+                  Change Password
+                </Button>
               </Grid>
             </Grid>
           </Box>
@@ -273,14 +384,30 @@ const ProfilePage = () => {
         {/* Settings Tab */}
         {activeTab === 4 && (
           <Box sx={{ mt: 4 }}> {/* Consistent top margin */}
-            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2.5 }}>Settings</Typography> {/* Styled title */}
-            {/* <Divider sx={{ my: 2 }} /> */}
-            <Grid container spacing={2.5}> {/* Consistent spacing */}
+            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2.5 }}>Settings</Typography>
+            <Grid container spacing={2.5}>
               <Grid item xs={12} md={6}>
-                <TextField fullWidth label="Language" variant="outlined" defaultValue="English" />
+                <TextField
+                  fullWidth
+                  label="Language"
+                  variant="outlined"
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField fullWidth label="Timezone" variant="outlined" defaultValue="GMT" />
+                <TextField
+                  fullWidth
+                  label="Timezone"
+                  variant="outlined"
+                  value={timezone}
+                  onChange={(e) => setTimezone(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Button variant="contained" color="primary" onClick={handleSaveSettings}>
+                  Save Settings
+                </Button>
               </Grid>
             </Grid>
           </Box>
