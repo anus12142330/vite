@@ -6,21 +6,25 @@ import {
   Typography,
   Grid,
   TextField,
-  Paper,
+  // Paper, // Paper might be replaced by MainCard or Box for overall structure
   Divider,
-  Card,
-  CardContent,
+  Card, // Keep for now, might be used inside MainCards or if some sections aren't MainCard
+  CardContent, // Keep for use with Card or MainCard
   Avatar,
   IconButton,
   Chip,
   ListItemIcon,
   ListItemText,
-  Button
+  Button,
+  Paper // Re-adding Paper for now, will decide its fate in step 2
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+
+// Project Imports
+import MainCard from 'ui-component/cards/MainCard';
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -68,9 +72,20 @@ const ProfilePage = () => {
     alert('Personal details saved (check console)!');
   };
 
+  const handleCancelPersonalDetails = () => {
+    setPhoneNumber(initialUserInfo.phone);
+    setDateOfBirth(initialAboutInfo.dob);
+    // console.log('Personal details edit cancelled, fields reset.');
+  };
+
   const handleSaveAccountDetails = () => {
     console.log('Saving Account Details:', { username });
     alert('Account details saved (check console)!');
+  };
+
+  const handleCancelAccountDetails = () => {
+    setUsername(initialUserInfo.name?.toLowerCase().replace(' ', '_') || 'jwt_user');
+    // console.log('Account details edit cancelled, fields reset.');
   };
 
   // --- Tab 3: Change Password States ---
@@ -98,6 +113,13 @@ const ProfilePage = () => {
     setConfirmPassword('');
   };
 
+  const handleCancelChangePassword = () => {
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    // console.log('Password change cancelled, fields cleared.');
+  };
+
   // --- Tab 4: Settings States ---
   const [language, setLanguage] = useState('English'); // Default from current UI
   const [timezone, setTimezone] = useState('GMT');     // Default from current UI
@@ -105,6 +127,12 @@ const ProfilePage = () => {
   const handleSaveSettings = () => {
     console.log('Saving Settings:', { language, timezone });
     alert('Settings saved (check console)!');
+  };
+
+  const handleCancelSettings = () => {
+    setLanguage('English'); // Reset to default
+    setTimezone('GMT');     // Reset to default
+    // console.log('Settings edit cancelled, fields reset.');
   };
 
   const educationInfo = [
@@ -121,10 +149,12 @@ const ProfilePage = () => {
   ];
 
   return (
-    <Box sx={{ width: '100%', p: { xs: 1, sm: 2, md: 3 } }}> {/* Add responsive padding to the outer Box */}
-      <Paper elevation={2} sx={{ p: { xs: 2, sm: 3, md: 4 }, borderRadius: '12px' }}> {/* Softer elevation, consistent border radius */}
-        <Typography variant="h4" gutterBottom sx={{ mb: 3, fontWeight: 'bold' }}> {/* Ensure enough margin, bolder title */}
-          Profile Settings
+    // Changed Paper to Box for the main page container, padding is kept on the outer Box.
+    // The inner p: { xs: 2, sm: 3, md: 4 } and borderRadius: '12px' from Paper are removed as content within tabs will be carded.
+    <Box sx={{ width: '100%', p: { xs: 1, sm: 2, md: 3 } }}>
+      {/* <Paper elevation={2} sx={{ p: { xs: 2, sm: 3, md: 4 }, borderRadius: '12px' }}> */}
+        <Typography variant="h3" gutterBottom sx={{ mb: 2 /* Berry titles often h3 and less margin */ }}>
+          Account Settings {/* Changed title slightly to match common Berry usage */}
         </Typography>
 
         <Tabs
@@ -145,127 +175,96 @@ const ProfilePage = () => {
       <Grid container spacing={3}> {/* Increased spacing between left and right panels */}
   {/* Left Panel */}
   <Grid item xs={12} md={4}>
-    <Paper
-      elevation={1}
-      sx={{
-        height: '100%',
-        border: '1px solid #e0e0e0',
-        borderRadius: 2,
-        p: 3, // Increased padding
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#f7f9fc', // Slightly different background
-        borderRadius: '12px', // More rounded corners
-      }}
-    >
-      <Card variant="outlined" sx={{ flex: 1, display: 'flex', flexDirection: 'column', borderRadius: '8px' }}>
-        <CardContent sx={{ textAlign: 'center' }}> {/* Centered content */}
-          <Avatar src={userInfo.avatar} sx={{ width: 100, height: 100, margin: '0 auto 16px auto' }} /> {/* Larger avatar, centered with margin */}
-          <Typography variant="h5" sx={{ mt: 1, fontWeight: 'bold' }}>{userInfo.name}</Typography> {/* Bolder name */}
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>{userInfo.job}</Typography> {/* Increased bottom margin */}
-          <Chip label={userInfo.chipLabel} color="primary" size="medium" sx={{ mt: 1, mb: 2 }} /> {/* Medium chip, more margin */}
-        </CardContent>
-
-        <Divider sx={{ my: 1 }} />
-
-        <CardContent>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-            <EmailIcon color="action" sx={{ mr: 1.5 }} />
-            <Typography variant="body2">{userInfo.email}</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-            <PhoneIcon color="action" sx={{ mr: 1.5 }} />
-            <Typography variant="body2">{userInfo.phone}</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}> {/* Increased bottom margin */}
-            <LocationOnIcon color="action" sx={{ mr: 1.5 }} />
-            <Typography variant="body2">{userInfo.location}</Typography>
-          </Box>
-        </CardContent>
-
-        <Divider sx={{ my: 1 }} />
-
-        <CardContent>
-          <Grid container justifyContent="space-around" sx={{ textAlign: 'center' }}>
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{userInfo.mails}</Typography>
-              <Typography variant="caption" color="text.secondary">Mails</Typography>
-            </Box>
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{userInfo.followers}</Typography>
-              <Typography variant="caption" color="text.secondary">Followers</Typography>
-            </Box>
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{userInfo.following}</Typography>
-              <Typography variant="caption" color="text.secondary">Following</Typography>
-            </Box>
-          </Grid>
-        </CardContent>
-      </Card>
-    </Paper>
+    <MainCard sx={{ height: '100%' }}>
+      <CardContent sx={{ textAlign: 'center' }}>
+        <Avatar src={userInfo.avatar} sx={{ width: 100, height: 100, margin: '0 auto 16px auto' }} />
+        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{userInfo.name}</Typography>
+        <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 1 }}>{userInfo.job}</Typography>
+        {/* Consider adding a status chip or a short bio line if present in demo */}
+        {/* Example: <Chip label="Active" color="success" size="small" sx={{ mt: 1 }} /> */}
+      </CardContent>
+      {/* Social stats and detailed contact info removed from this card to match Berry demo's compact left panel */}
+    </MainCard>
   </Grid>
 
-  {/* Right Panel */}
+  {/* Right Panel - Will contain multiple MainCards */}
   <Grid item xs={12} md={8}>
-    <Paper
-      elevation={1}
-      sx={{
-        height: '100%',
-        border: '1px solid #e0e0e0', // Keep a subtle border
-        borderRadius: '12px', // Match left panel
-        p: 3, // Increased padding
-        backgroundColor: '#f7f9fc', // Match left panel background
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 3, // Increased gap between cards
-      }}
-    >
-      {/* About Me Section */}
-      <Card variant="outlined" sx={{ borderRadius: '8px' }}>
-        <CardContent>
-          <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
-            <Typography variant="h6" sx={{ fontWeight: 'medium' }}>About Me</Typography>
-            <IconButton size="small" sx={{ color: 'primary.main' }}>
+    <Grid container spacing={3}> {/* Inner grid for stacking cards in the right panel */}
+      {/* About Me Card */}
+      <Grid item xs={12}>
+        <MainCard title="About Me">
+          {/* Edit icon can be part of MainCard's secondary prop or placed inside */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+            <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+              {aboutInfo.about}
+            </Typography>
+            <IconButton size="small" sx={{ color: 'primary.main' }}> {/* Keep edit for About Me */}
               <EditIcon fontSize="small" />
             </IconButton>
           </Box>
-          <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6, mb: 2.5 }}>{aboutInfo.about}</Typography>
+        </MainCard>
+      </Grid>
 
-          <Divider sx={{ my: 2.5 }} />
-
-          <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2 }}>Personal Details</Typography>
-          <Grid container spacing={1.5}> {/* Reduced spacing for tighter layout */}
-            {Object.entries(aboutInfo).slice(1).map(([key, value]) => (
-              <Grid item xs={12} sm={6} key={key}>
-                <Typography variant="body2" component="div">
-                  <Box component="strong" sx={{ fontWeight: 'medium', color: 'text.primary', mr: 0.5 }}>
-                    {key.replace(/([A-Z])/g, ' $1').trim()}:
-                  </Box>
-                  <Box component="span" color="text.secondary">
-                    {value}
-                  </Box>
-                </Typography>
-              </Grid>
-            ))}
+      {/* Personal Details Display Card */}
+      <Grid item xs={12}>
+        <MainCard title="Personal Details">
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Full Name</Typography>
+              <Typography variant="body1">{aboutInfo.fullName}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Date of Birth</Typography>
+              <Typography variant="body1">{aboutInfo.dob}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Gender</Typography>
+              <Typography variant="body1">{aboutInfo.gender}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Language</Typography>
+              <Typography variant="body1">{aboutInfo.language}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Nationality</Typography>
+              <Typography variant="body1">{aboutInfo.nationality}</Typography>
+            </Grid>
+            {/* Contact Info integrated here */}
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Email</Typography>
+              <Typography variant="body1">{userInfo.email}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Phone</Typography>
+              <Typography variant="body1">{userInfo.phone}</Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>Location</Typography>
+              <Typography variant="body1">{userInfo.location}</Typography>
+            </Grid>
           </Grid>
-        </CardContent>
-      </Card>
+        </MainCard>
+      </Grid>
 
-      {/* Education Section */}
-      <Card variant="outlined" sx={{ borderRadius: '8px' }}>
-        <CardContent>
-          <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2 }}>Education</Typography>
-          {/* <Divider sx={{ my: 2 }} /> No divider needed if spacing is good */}
+      {/* Education Card */}
+      <Grid item xs={12}>
+        <MainCard title="Education">
           {educationInfo.map((edu, index) => (
-            <Box key={index} sx={{ mb: index === educationInfo.length - 1 ? 0 : 2.5, '&:not(:last-child)': { pb: 1.5, borderBottom: '1px dashed #e0e0e0' } }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>{edu.degree}</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>{edu.institution}</Typography>
+            <Box
+              key={index}
+              sx={{
+                mb: index === educationInfo.length - 1 ? 0 : 2.5,
+                '&:not(:last-child)': { pb: 1.5, borderBottom: '1px dashed #e0e0e0' }
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 500, mb: 0.5 }}>{edu.degree}</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 0.5 }}>{edu.institution}</Typography>
               <Typography variant="caption" color="text.secondary">{edu.period}</Typography>
             </Box>
           ))}
-        </CardContent>
-      </Card>
-    </Paper>
+        </MainCard>
+      </Grid>
+    </Grid>
   </Grid>
 </Grid>
 
@@ -273,8 +272,7 @@ const ProfilePage = () => {
 
         {/* Personal Details Tab */}
         {activeTab === 1 && (
-          <Box sx={{ mt: 4 }}> {/* Consistent top margin */}
-            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2.5 }}>Personal Details</Typography>
+          <MainCard title="Edit Personal Details">
             <Grid container spacing={2.5}>
               <Grid item xs={12} md={6}>
                 <TextField
@@ -283,6 +281,7 @@ const ProfilePage = () => {
                   variant="outlined"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
+                  InputLabelProps={{ shrink: true }} // Added shrink as it's pre-filled
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -293,22 +292,24 @@ const ProfilePage = () => {
                   type="date"
                   value={dateOfBirth}
                   onChange={(e) => setDateOfBirth(e.target.value)}
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{ shrink: true }} // Already present, ensure consistency
                 />
               </Grid>
-              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+                <Button variant="outlined" color="secondary" onClick={handleCancelPersonalDetails}>
+                  Cancel
+                </Button>
                 <Button variant="contained" color="primary" onClick={handleSavePersonalDetails}>
                   Save Details
                 </Button>
               </Grid>
             </Grid>
-          </Box>
+          </MainCard>
         )}
 
         {/* My Account Tab */}
         {activeTab === 2 && (
-          <Box sx={{ mt: 4 }}> {/* Consistent top margin */}
-            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2.5 }}>My Account</Typography>
+          <MainCard title="My Account">
             <Grid container spacing={2.5}>
               <Grid item xs={12} md={6}>
                 <TextField
@@ -317,6 +318,7 @@ const ProfilePage = () => {
                   variant="outlined"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  InputLabelProps={{ shrink: true }} // Added shrink
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -324,23 +326,26 @@ const ProfilePage = () => {
                   fullWidth
                   label="Email"
                   variant="outlined"
-                  value={initialUserInfo.email} // Display original email
-                  disabled // Keep it disabled
+                  value={initialUserInfo.email}
+                  disabled
+                  InputLabelProps={{ shrink: true }} // Added shrink for consistency with disabled pre-filled fields
                 />
               </Grid>
-              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+                <Button variant="outlined" color="secondary" onClick={handleCancelAccountDetails}>
+                  Cancel
+                </Button>
                 <Button variant="contained" color="primary" onClick={handleSaveAccountDetails}>
                   Save Account Details
                 </Button>
               </Grid>
             </Grid>
-          </Box>
+          </MainCard>
         )}
 
         {/* Change Password Tab */}
         {activeTab === 3 && (
-          <Box sx={{ mt: 4 }}> {/* Consistent top margin */}
-            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2.5 }}>Change Password</Typography>
+          <MainCard title="Change Password">
             <Grid container spacing={2.5}>
               <Grid item xs={12} md={6}>
                 <TextField
@@ -362,7 +367,7 @@ const ProfilePage = () => {
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12}> {/* Confirm New Password takes full width */}
                 <TextField
                   fullWidth
                   label="Confirm New Password"
@@ -372,19 +377,21 @@ const ProfilePage = () => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </Grid>
-              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+                <Button variant="outlined" color="secondary" onClick={handleCancelChangePassword}>
+                  Cancel
+                </Button>
                 <Button variant="contained" color="primary" onClick={handleChangePassword}>
                   Change Password
                 </Button>
               </Grid>
             </Grid>
-          </Box>
+          </MainCard>
         )}
 
         {/* Settings Tab */}
         {activeTab === 4 && (
-          <Box sx={{ mt: 4 }}> {/* Consistent top margin */}
-            <Typography variant="h6" sx={{ fontWeight: 'medium', mb: 2.5 }}>Settings</Typography>
+          <MainCard title="Settings">
             <Grid container spacing={2.5}>
               <Grid item xs={12} md={6}>
                 <TextField
@@ -393,6 +400,7 @@ const ProfilePage = () => {
                   variant="outlined"
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
+                  InputLabelProps={{ shrink: true }} // Added shrink
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -402,17 +410,21 @@ const ProfilePage = () => {
                   variant="outlined"
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
+                  InputLabelProps={{ shrink: true }} // Added shrink
                 />
               </Grid>
-              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+                <Button variant="outlined" color="secondary" onClick={handleCancelSettings}>
+                  Cancel
+                </Button>
                 <Button variant="contained" color="primary" onClick={handleSaveSettings}>
                   Save Settings
                 </Button>
               </Grid>
             </Grid>
-          </Box>
+          </MainCard>
         )}
-      </Paper>
+      {/* </Paper> */} {/* Closing tag for the removed Paper */}
     </Box>
   );
 };
