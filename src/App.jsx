@@ -2,7 +2,7 @@ import { RouterProvider } from 'react-router-dom';
 
 // routing
 import router from 'routes';
-
+import './api';
 
 // project imports
 import NavigationScroll from 'layout/NavigationScroll';
