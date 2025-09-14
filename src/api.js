@@ -1,32 +1,36 @@
+// src/api.js
 import axios from 'axios';
 
-// ✅ Create a pre-configured axios instance
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE || 'http://localhost:5641',
-  withCredentials: true,   // needed for express-session cookies
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
+// Point ALL existing axios calls to your backend
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE || 'http://localhost:5641';
+axios.defaults.withCredentials = true; // only matters if you use sessions/cookies
 
-// Optional: log requests/responses for debugging
-api.interceptors.request.use(
+// Helpful logs (optional but great for debugging)
+axios.interceptors.request.use(
   (config) => {
-    console.log('➡️ API Request:', config.method?.toUpperCase(), config.url, config.data || config.params);
+    console.log(
+      '➡️', (config.method || 'get').toUpperCase(),
+      (config.baseURL || '') + (config.url || ''),
+      config.params || config.data || ''
+    );
     return config;
   },
-  (error) => Promise.reject(error)
+  (err) => Promise.reject(err)
 );
 
-api.interceptors.response.use(
-  (response) => {
-    console.log('✅ API Response:', response.status, response.data);
-    return response;
+axios.interceptors.response.use(
+  (res) => {
+    console.log('✅', res.status, res.config?.url, res.data);
+    return res;
   },
-  (error) => {
-    console.error('❌ API Error:', error.response?.status, error.response?.data);
-    return Promise.reject(error);
+  (err) => {
+    const s = err.response?.status;
+    const u = err.config?.url;
+    const d = err.response?.data;
+    console.error('❌', s || err.message, u || '', d || '');
+    return Promise.reject(err);
   }
 );
 
-export default api;
+// (no export needed — but exporting is fine)
+export default axios;
