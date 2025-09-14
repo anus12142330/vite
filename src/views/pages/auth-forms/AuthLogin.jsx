@@ -43,7 +43,7 @@ export default function AuthLogin() {
         localStorage.setItem('user', JSON.stringify(response.data.user));
         navigate('/dashboard');
       } else {
-        setLoginError('Invalid credentials');
+        setLoginError('Invalid credentials1');
       }
     } catch (err) {
       console.error(err);
