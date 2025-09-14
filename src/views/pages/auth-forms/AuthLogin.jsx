@@ -37,14 +37,19 @@ export default function AuthLogin() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/login', { email, password });
-      if (response.data.success) {
-        setUser(response.data.user);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        navigate('/dashboard');
-      } else {
-        setLoginError('Invalid credentials1');
-      }
+      const res = await axios.post(
+  'https://render-express-deployment-fzqg.onrender.com/api/login',
+  { email: email.trim(), password: password.trim() }
+);
+console.log('LOGIN RES', res.data);
+      // const response = await axios.post('https://render-express-deployment-fzqg.onrender.com/api/login', { email, password });
+      // if (response.data.success) {
+      //   setUser(response.data.user);
+      //   localStorage.setItem('user', JSON.stringify(response.data.user));
+      //   navigate('/dashboard');
+      // } else {
+      //   setLoginError('Invalid credentials1');
+      // }
     } catch (err) {
       console.error(err);
       setLoginError('Server error');
