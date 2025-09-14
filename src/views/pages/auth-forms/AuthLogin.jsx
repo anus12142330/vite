@@ -34,28 +34,23 @@ export default function AuthLogin() {
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post(
-  'https://render-express-deployment-fzqg.onrender.com/api/login',
-  { email: email.trim(), password: password.trim() }
-);
-console.log('LOGIN RES', res.data);
-      // const response = await axios.post('https://render-express-deployment-fzqg.onrender.com/api/login', { email, password });
-      // if (response.data.success) {
-      //   setUser(response.data.user);
-      //   localStorage.setItem('user', JSON.stringify(response.data.user));
-      //   navigate('/dashboard');
-      // } else {
-      //   setLoginError('Invalid credentials1');
-      // }
-    } catch (err) {
-      console.log("12");
-      console.error(err);
-      setLoginError('Server error');
-    }
-  };
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   try {     
+  //     const response = await axios.post('https://render-express-deployment-fzqg.onrender.com/api/login', { email, password });
+  //     if (response.data.success) {
+  //       setUser(response.data.user);
+  //       localStorage.setItem('user', JSON.stringify(response.data.user));
+  //       navigate('/dashboard');
+  //     } else {
+  //       setLoginError('Invalid credentials1');
+  //     }
+  //   } catch (err) {
+  //     console.log("12");
+  //     console.error(err);
+  //     setLoginError('Server error');
+  //   }
+  // };
 
   return (
     <form onSubmit={handleLogin}>
