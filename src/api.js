@@ -1,36 +1,39 @@
 // src/api.js
 import axios from 'axios';
 
-// Point ALL existing axios calls to your backend
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE || 'http://localhost:5641';
-axios.defaults.withCredentials = true; // only matters if you use sessions/cookies
+// ✅ Point axios to your backend
+axios.defaults.baseURL =
+  import.meta.env.VITE_API_BASE || 'http://localhost:5641';
 
-// Helpful logs (optional but great for debugging)
+axios.defaults.withCredentials = true; // needed for express-session cookies
+axios.defaults.headers['Content-Type'] = 'application/json';
+
+// Optional: debugging logs
 axios.interceptors.request.use(
   (config) => {
     console.log(
-      '➡️', (config.method || 'get').toUpperCase(),
+      '➡️ API Request:',
+      config.method?.toUpperCase(),
       (config.baseURL || '') + (config.url || ''),
       config.params || config.data || ''
     );
     return config;
   },
-  (err) => Promise.reject(err)
+  (error) => Promise.reject(error)
 );
 
 axios.interceptors.response.use(
-  (res) => {
-    console.log('✅', res.status, res.config?.url, res.data);
-    return res;
+  (response) => {
+    console.log('✅ API Response:', response.status, response.data);
+    return response;
   },
-  (err) => {
-    const s = err.response?.status;
-    const u = err.config?.url;
-    const d = err.response?.data;
-    console.error('❌', s || err.message, u || '', d || '');
-    return Promise.reject(err);
+  (error) => {
+    const s = error.response?.status;
+    const u = error.config?.url;
+    const d = error.response?.data;
+    console.error('❌ API Error:', s || error.message, u || '', d || '');
+    return Promise.reject(error);
   }
 );
 
-// (no export needed — but exporting is fine)
 export default axios;
