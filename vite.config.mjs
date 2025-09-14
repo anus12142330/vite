@@ -3,9 +3,7 @@ import react from '@vitejs/plugin-react';
 import jsconfigPaths from 'vite-jsconfig-paths';
 
 export default defineConfig(({ mode }) => {
-  // depending on your application, base can also be "/"
-  const env = loadEnv(mode, process.cwd(), '');
-  const API_URL = `${env.VITE_APP_BASE_NAME}`;
+  // depending on your application, base can also be a subdirectory e.g. /my-app/
   const PORT = 3000;
 
   return {
@@ -16,19 +14,8 @@ export default defineConfig(({ mode }) => {
       port: PORT,
       host: true,
       proxy: {
-      '/api': {
-        target: 'https://render-express-deployment-fzqg.onrender.com',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/gcore/web')
+        '/api': 'http://localhost:5641'
       },
-      '/aps': {
-        target: 'https://nuroil.fortiddns.com:8081/nuroilerp/uploads/emailattachments/',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/aps/, '')
-      }
-    }
     },
     build: {
       chunkSizeWarningLimit: 1600
@@ -58,7 +45,7 @@ export default defineConfig(({ mode }) => {
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs'
       }
     },
-    base: API_URL,
+    base: '/',
     plugins: [react(), jsconfigPaths()]
   };
 });
