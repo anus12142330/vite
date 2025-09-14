@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
       host: true,
       proxy: {
       '/api': {
-        target: 'https://nuroil.fortiddns.com:8880',
+        target: 'https://render-express-deployment-fzqg.onrender.com',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '/gcore/web')
