@@ -1,115 +1,82 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
+import { useUser } from 'contexts/UserContext';
 
 
-import {
-  useTheme,
-  Button,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  Grid,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  Typography,
-  Box,
-  Alert
-} from '@mui/material';
-import AnimateButton from 'ui-component/extended/AnimateButton';
+import { useTheme } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import AnimateButton from 'ui-component/extended/AnimateButton';
 
 export default function AuthLogin() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [checked, setChecked] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
     try {
-      const res = await fetch('/api/post/logincust', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({ username, password })
-                });
-
-                const resText = await res.text();
-                //console.log('[Raw Text Response]', resText); // Log the text before parsing
-      
-      let data;
-      try {
-        data = JSON.parse(resText);
-      } catch (err) {
-        throw new Error('Invalid server response');
+      const response = await axios.post('/api/login', { email, password });
+      if (response.data.success) {
+        setUser(response.data.user);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        navigate('/dashboard');
+      } else {
+        setLoginError('Invalid credentials');
       }
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Login failed');
-      }
-
-      // Store token and user data
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-
-      // Redirect to dashboard
-      navigate('/dashboard');
     } catch (err) {
-      setError(err.message || 'Login failed');
-    } finally {
-      setLoading(false);
+      console.error(err);
+      setLoginError('Server error');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {error && (
-        <Box mb={2}>
-          <Alert severity="error">{error}</Alert>
-        </Box>
-      )}
-
-      <FormControl fullWidth sx={{ ...theme.typography.customInput, mb: 2 }}>
-        <InputLabel htmlFor="username">Username or Email</InputLabel>
+    <form onSubmit={handleLogin}>
+      <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+        <InputLabel>Email Address / Username</InputLabel>
         <OutlinedInput
-          id="username"
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          label="Username or Email"
-          required
+          type="email"
+          value={email}
+          name="email"
+          onChange={(e) => setEmail(e.target.value)}
         />
       </FormControl>
 
-      <FormControl fullWidth sx={{ ...theme.typography.customInput, mb: 2 }}>
-        <InputLabel htmlFor="password">Password</InputLabel>
+      <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+        <InputLabel>Password</InputLabel>
         <OutlinedInput
-          id="password"
           type={showPassword ? 'text' : 'password'}
           value={password}
+          name="password"
           onChange={(e) => setPassword(e.target.value)}
-          required
           endAdornment={
             <InputAdornment position="end">
               <IconButton
                 onClick={handleClickShowPassword}
                 onMouseDown={handleMouseDownPassword}
                 edge="end"
+                size="large"
               >
                 {showPassword ? <Visibility /> : <VisibilityOff />}
               </IconButton>
@@ -118,31 +85,26 @@ export default function AuthLogin() {
         />
       </FormControl>
 
-      <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Grid item>
+      <Grid container sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+        <Grid>
           <FormControlLabel
-            control={<Checkbox checked={checked} onChange={(e) => setChecked(e.target.checked)} />}
+            control={<Checkbox checked={checked} onChange={(e) => setChecked(e.target.checked)} color="primary" />}
             label="Keep me logged in"
           />
         </Grid>
-        <Grid item>
-          <Typography component={Link} to="/forgot-password" variant="subtitle1" color="secondary">
+        <Grid>
+          <Typography component={Link} to="/forgot-password" color="secondary" sx={{ textDecoration: 'none' }}>
             Forgot Password?
           </Typography>
         </Grid>
       </Grid>
 
-      <Box mt={2}>
+      {loginError && <Typography color="error" sx={{ mt: 2 }}>{loginError}</Typography>}
+
+      <Box sx={{ mt: 2 }}>
         <AnimateButton>
-          <Button
-            type="submit"
-            fullWidth
-            size="large"
-            variant="contained"
-            color="secondary"
-            disabled={loading}
-          >
-            {loading ? 'Signing In...' : 'Sign In'}
+          <Button color="secondary" fullWidth size="large" type="submit" variant="contained">
+            Sign In
           </Button>
         </AnimateButton>
       </Box>
