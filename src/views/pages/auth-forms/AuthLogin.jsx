@@ -51,6 +51,7 @@ console.log('LOGIN RES', res.data);
       //   setLoginError('Invalid credentials1');
       // }
     } catch (err) {
+      console.log("12");
       console.error(err);
       setLoginError('Server error');
     }
